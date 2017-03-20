@@ -4,12 +4,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def plot_grid_search_result(model_cv, x=None, y=None, xfunc=None, yfunc=None):
+def plot_grid_search_result(gs_model, x=None, y=None, xfunc=None, yfunc=None):
     """ 将cv的结果展示
     如果是一个参数则显示为曲线图，如果是两个参数则显示为heatmap
 
     Args:
-        model_cv: sklearn.model_selection._search.GridSearchCV
+        gs_model: sklearn.model_selection._search.GridSearchCV
             进行GridSearchCV的返回值
         x, y: str, default None
             图的横纵坐标轴是什么
@@ -17,8 +17,8 @@ def plot_grid_search_result(model_cv, x=None, y=None, xfunc=None, yfunc=None):
             是否对横纵坐标的值做处理（有可能需要对x进行log操作）
 
     """
-    n_paras = len(model_cv.cv_results_['params'])
-    paras_type = list(model_cv.cv_results_['params'][0].keys())
+    n_paras = len(gs_model.cv_results_['params'])
+    paras_type = list(gs_model.cv_results_['params'][0].keys())
     n_paras_type = len(paras_type)
 
     # x为空就赋值为第一个paras_type
@@ -37,14 +37,14 @@ def plot_grid_search_result(model_cv, x=None, y=None, xfunc=None, yfunc=None):
         # 获取各参数值score
         cv_score = [
             [
-                model_cv.cv_results_['mean_test_score'][i],
-                score_trans(model_cv.cv_results_['params'][i][x], xfunc),
+                gs_model.cv_results_['mean_test_score'][i],
+                score_trans(gs_model.cv_results_['params'][i][x], xfunc),
             ] for i in range(n_paras)
         ]
         # df
         cv_score_df = pd.Series(*tuple(zip(*cv_score)))
         # 改变轴显示值的顺序
-        x_values = [score_trans(v, xfunc) for v in model_cv.get_params()['param_grid'][x]]
+        x_values = [score_trans(v, xfunc) for v in gs_model.get_params()['param_grid'][x]]
         cv_score_df = cv_score_df[x_values]
         # plot
         cv_score_df.plot()
@@ -54,17 +54,17 @@ def plot_grid_search_result(model_cv, x=None, y=None, xfunc=None, yfunc=None):
         # 获取各参数值score
         cv_score = [
             [
-                model_cv.cv_results_['mean_test_score'][i],
-                score_trans(model_cv.cv_results_['params'][i][x], xfunc),
-                score_trans(model_cv.cv_results_['params'][i][y], yfunc),
+                gs_model.cv_results_['mean_test_score'][i],
+                score_trans(gs_model.cv_results_['params'][i][x], xfunc),
+                score_trans(gs_model.cv_results_['params'][i][y], yfunc),
             ] for i in range(n_paras)
         ]
         # 将score变成二维的形式
         cv_score_df = pd.DataFrame(cv_score, columns=['score']+paras_type)
         cv_score_df = cv_score_df.pivot(y, x, 'score')
         # 改变轴显示值的顺序
-        x_values = [score_trans(v, xfunc) for v in model_cv.get_params()['param_grid'][x]]
-        y_values = [score_trans(v, xfunc) for v in model_cv.get_params()['param_grid'][y]]
+        x_values = [score_trans(v, xfunc) for v in gs_model.get_params()['param_grid'][x]]
+        y_values = [score_trans(v, xfunc) for v in gs_model.get_params()['param_grid'][y]]
         cv_score_df = cv_score_df.loc[y_values, x_values]
         # plot
         sns.heatmap(cv_score_df, annot=True)
