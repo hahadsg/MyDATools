@@ -29,7 +29,7 @@ def plot_grid_search_result(model_cv, x=None, y=None, xfunc=None, yfunc=None):
         y = paras_type[1]
 
     # 对坐标轴的值进行转换
-    score_trans = lambda score, func: func(score) if func is not None else score
+    score_trans = lambda score, func: str(func(score) if func is not None else score)
 
     # plot过程
     # 一个轴
@@ -41,8 +41,12 @@ def plot_grid_search_result(model_cv, x=None, y=None, xfunc=None, yfunc=None):
                 score_trans(model_cv.cv_results_['params'][i][x], xfunc),
             ] for i in range(n_paras)
         ]
-        # plot
+        # df
         cv_score_df = pd.Series(*tuple(zip(*cv_score)))
+        # 改变轴显示值的顺序
+        x_values = [score_trans(v, xfunc) for v in model_cv.get_params()['param_grid'][x]]
+        cv_score_df = cv_score_df[x_values]
+        # plot
         cv_score_df.plot()
 
     # 两个轴
@@ -58,6 +62,10 @@ def plot_grid_search_result(model_cv, x=None, y=None, xfunc=None, yfunc=None):
         # 将score变成二维的形式
         cv_score_df = pd.DataFrame(cv_score, columns=['score']+paras_type)
         cv_score_df = cv_score_df.pivot(y, x, 'score')
+        # 改变轴显示值的顺序
+        x_values = [score_trans(v, xfunc) for v in model_cv.get_params()['param_grid'][x]]
+        y_values = [score_trans(v, xfunc) for v in model_cv.get_params()['param_grid'][y]]
+        cv_score_df = cv_score_df.loc[y_values, x_values]
         # plot
         sns.heatmap(cv_score_df, annot=True)
 
