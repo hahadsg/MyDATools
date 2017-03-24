@@ -31,7 +31,10 @@ def plot_grid_search_result(gs_model, x=None, y=None, xfunc=None, yfunc=None):
     # 对坐标轴的值进行转换
     score_trans = lambda score, func: str(func(score) if func is not None else score)
 
-    # plot过程
+    # print最优参数
+    print('Best params:', gs_model.best_params_)
+
+    # plot过程（超过两个轴就不plot）
     # 一个轴
     if n_paras_type == 1:
         # 获取各参数值score
@@ -69,6 +72,4 @@ def plot_grid_search_result(gs_model, x=None, y=None, xfunc=None, yfunc=None):
         # plot
         sns.heatmap(cv_score_df, annot=True)
 
-    else:
-        raise(Expection('参数数量只能为1个或者2个'))
 
