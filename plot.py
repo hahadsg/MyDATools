@@ -33,6 +33,7 @@ def plot_grid_search_result(gs_model, x=None, y=None, xfunc=None, yfunc=None):
 
     # print最优参数
     print('Best params:', gs_model.best_params_)
+    print('Best score:', gs_model.best_score_)
 
     # plot过程（超过两个轴就不plot）
     # 一个轴
