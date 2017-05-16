@@ -68,7 +68,7 @@ def plot_grid_search_result(gs_model, x=None, y=None, xfunc=None, yfunc=None):
         cv_score_df = cv_score_df.pivot(y, x, 'score')
         # 改变轴显示值的顺序
         x_values = [score_trans(v, xfunc) for v in gs_model.get_params()['param_grid'][x]]
-        y_values = [score_trans(v, xfunc) for v in gs_model.get_params()['param_grid'][y]]
+        y_values = [score_trans(v, yfunc) for v in gs_model.get_params()['param_grid'][y]]
         cv_score_df = cv_score_df.loc[y_values, x_values]
         # plot
         sns.heatmap(cv_score_df, annot=True)
