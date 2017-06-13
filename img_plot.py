@@ -1,7 +1,11 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 import keras
+from keras import backend as K
 
 def img_to_plot(img):
-    if keras.backend.image_dim_ordering() == 'tf':
+    if K.image_dim_ordering() == 'tf':
         return np.rollaxis(img, 0, 1).astype(np.uint8)
     else:
         return np.rollaxis(img, 0, 3).astype(np.uint8)
