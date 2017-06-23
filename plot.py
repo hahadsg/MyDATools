@@ -176,7 +176,7 @@ def radar_factory(num_vars, frame='circle'):
 # --------------------------------------------------------------------------------
 # 绘制雷达图
 # --------------------------------------------------------------------------------
-def radar_plot(data, varlabels=None, legends=None, ax=None):
+def radar_plot(data, varlabels=None, legends=None, ax=None, class_size=None):
     """ 绘制雷达图
 
     Args:
@@ -196,6 +196,10 @@ def radar_plot(data, varlabels=None, legends=None, ax=None):
             varlabels = data.columns.tolist()
         if legends is None:
             legends = data.index.tolist()
+            if class_size is not None:
+                class_ratio = class_size / np.sum(class_size)
+                for i, class_name in enumerate(legends):
+                    legends[i] = '{}:{:>6.1%}, {}'.format(legends[i], class_ratio[i], class_size[i])
         
     # 获取theta 并产生projection
     theta = radar_factory(case_data.shape[1])
