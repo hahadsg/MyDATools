@@ -1,8 +1,14 @@
 # coding: utf-8
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
+
+import matplotlib.pyplot as plt
+from matplotlib.path import Path
+from matplotlib.spines import Spine
+from matplotlib.projections.polar import PolarAxes
+from matplotlib.projections import register_projection
+
 
 # --------------------------------------------------------------------------------
 # cv结果展示
@@ -77,13 +83,27 @@ def plot_grid_search_result(gs_model, x=None, y=None, xfunc=None, yfunc=None):
         sns.heatmap(cv_score_df, annot=True)
 
 
-import numpy as np
+# --------------------------------------------------------------------------------
+# 绘制学习曲线
+# --------------------------------------------------------------------------------
+def plot_learning_curve(param_range, train_scores, test_scores):
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
 
-import matplotlib.pyplot as plt
-from matplotlib.path import Path
-from matplotlib.spines import Spine
-from matplotlib.projections.polar import PolarAxes
-from matplotlib.projections import register_projection
+    plt.fill_between(param_range, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.2,
+                     color="r")
+    plt.fill_between(param_range, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.2,
+                     color="g")
+    plt.plot(param_range, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    plt.plot(param_range, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+    plt.legend(loc="best")
+    plt.show()
 
 
 # --------------------------------------------------------------------------------
