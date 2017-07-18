@@ -9,6 +9,8 @@ from matplotlib.spines import Spine
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.projections import register_projection
 
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import average_precision_score
 
 # --------------------------------------------------------------------------------
 # cv结果展示
@@ -234,3 +236,32 @@ def radar_plot(data, varlabels=None, legends=None, ax=None, class_size=None):
         ax.set_varlabels(varlabels)
     if legends is not None:
         ax.legend(legends)
+
+
+# --------------------------------------------------------------------------------
+# 绘制PR_curve
+# --------------------------------------------------------------------------------
+def plot_precision_recall_curve(y_true, y_proba):
+    """绘制PR_curve
+
+    Args:
+        y_true: np.array
+            真实label, {0,1}或者{-1,1}
+        y_proba: np.array
+            预测的概率
+
+    Returns:
+        precision: np.array
+            查准率
+        recall: np.array
+            查全率
+        thresholds: np.array
+            阈值
+    """
+    p, r, th = precision_recall_curve(y_true, y_proba)
+    auc = average_precision_score(y_true, y_proba)
+    plt.title('Precision-Recall Curve: AUC={0:0.2f}'.format(auc))
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.plot(r, p)
+    return p, r, th
