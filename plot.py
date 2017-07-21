@@ -11,6 +11,8 @@ from matplotlib.projections import register_projection
 
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
+from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
 
 # --------------------------------------------------------------------------------
 # cv结果展示
@@ -265,3 +267,33 @@ def plot_precision_recall_curve(y_true, y_proba):
     plt.ylabel('Precision')
     plt.plot(r, p)
     return p, r, th
+
+
+# --------------------------------------------------------------------------------
+# 将数据降维 以2D的形式展现
+# --------------------------------------------------------------------------------
+def plot_data_2D(X, y, method='pca'):
+    """将数据降维 以2D的形式展现
+    
+    Args
+        X: array like
+            特征数据
+        y: array like
+            标签数据
+        method: str or dimensionality reduction solver
+            optional: tsne, pca
+            或者直接传降维器
+    """
+    if method == 'tsne':
+        solver = TSNE(n_components=2)
+    elif method == 'pca':
+        solver = PCA(n_components=2)
+    else:
+        solver = method
+    print(solver)
+
+    X_new = solver.fit_transform(X)
+    x1, x2 = X_new[:, 0], X_new[:, 1]
+    
+    for i, iclass in enumerate(np.unique(y)):
+        plt.scatter(x1[y==iclass], x2[y==iclass], alpha=0.5)
