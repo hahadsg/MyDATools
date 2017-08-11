@@ -168,6 +168,7 @@ def plot_precision_recall_curve(y_true, y_proba):
     plt.xlabel('Recall')
     plt.ylabel('Precision')
     plt.plot(r, p)
+    plt.grid()
     return p, r, th
 
 
