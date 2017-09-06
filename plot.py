@@ -142,6 +142,24 @@ def radar_plot(data, varlabels=None, legends=None, ax=None, class_size=None):
         ax.legend(legends)
 
 
+def plot_confusion_matrix(cm, classes=None):
+    """plot confusion_matrix
+
+    Args:
+        cm: array_like(2D)
+            confusion matrix
+        classes: array_like, default None
+            classes name
+
+    """
+    sns.heatmap(cm, annot=True, cmap=plt.cm.Blues, fmt='g', edgecolor='black')
+    if classes:
+        tick_marks = np.arange(len(classes)) + 0.5
+        plt.xticks(tick_marks, classes)
+        plt.yticks(tick_marks, classes)
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+
 # --------------------------------------------------------------------------------
 # 绘制PR_curve
 # --------------------------------------------------------------------------------
