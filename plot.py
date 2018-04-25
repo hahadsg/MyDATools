@@ -352,3 +352,77 @@ def plot_multiclass_feature_dist(x, y, label_dict={}):
         sns.distplot(x[y == c], label=str(label_dict.get(c, c)))
     plt.legend()
 
+
+# --------------------------------------------------------------------------------
+# 绘制分类器相关
+# --------------------------------------------------------------------------------
+def plot_decision_boundary(X, y, pred_func, h=0.02):
+    """绘制X, y以及预测边界（仅限特征维度为2）
+
+    Args:
+        X: array_like
+            特征，shape=(sample_num, features_num)，这里features_num只能为2
+        y: array_like
+            标签，shape(sample_num, )
+        pred_func: function
+            预测的函数
+        h: float
+            描点间隔（越小，画的越精细）
+    """
+    # Set min and max values and give it some padding
+    x_min, x_max = X[:, 0].min() - .5, X[:, 0].max() + .5
+    y_min, y_max = X[:, 1].min() - .5, X[:, 1].max() + .5
+    # Generate a grid of points with distance h between them
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    # Predict the function value for the whole gid
+    Z = pred_func(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    # Plot the contour and training examples
+    plt.contourf(xx, yy, Z, cmap=plt.cm.Spectral, alpha=0.9)
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Spectral, s=10)
+
+def plot_classifier_paras(model, X, y, paras_dict=None, plot_input=True, col_num=4):
+    """绘制分类器在不同参数下的预测分布图
+
+    Args:
+        model: machine_learning model
+            模型对象
+        X: array_like
+            特征，shape=(sample_num, features_num)，这里features_num只能为2
+        y: array_like
+            标签，shape(sample_num, )
+        paras_dict: dict, default None
+            需要代入模型的超参数
+            如：{'a': [1,2], 'b': [10,20]}
+            将会生成[{'a':1, 'b':10}, {'a':2, 'b':10}, {'a':1, 'b':20}, {'a':2, 'b':20}] 即生成笛卡尔积，代入模型
+        plot_input: boolean, default True
+            是否绘制只有样本点的图（即没有预测边界的图）
+        col_num: int, default 4
+            每行图的数量
+    """
+    # plot设置
+    figsize_col = 15
+    figsize_row = figsize_col / col_num * 0.85
+
+    # 转换paras格式 {'a': [1,2], 'b': [10,20]} -> [{'a':1, 'b':10}, ...] 即生成笛卡尔积
+    if paras_dict is None:
+        paras_list = [{}]
+    else:
+        paras_keys = list(paras_dict.keys())
+        paras_values = itertools.product(*paras_dict.values())
+        paras_list = [dict(zip(paras_keys, values)) for values in paras_values]
+
+    if plot_input: paras_list = np.append([None], paras_list)
+    plot_row_num = (len(paras_list) - 1) // col_num + 1
+    plt.figure(figsize=(figsize_col, plot_row_num * figsize_row))
+
+    for i, paras in enumerate(paras_list):
+        plt.subplot(plot_row_num, col_num, i+1)
+        if plot_input and i == 0:
+            plt.title('input')
+            plt.scatter(X[:,0], X[:,1], c=y, cmap=plt.cm.Spectral, s=10)
+            continue
+        plt.title(', '.join(['%s = %s'%(k,v) for k,v in paras.items()]))
+        model_obj = model(**paras)
+        model_obj.fit(X, y)
+        plot_decision_boundary(X, y, model_obj.predict)
