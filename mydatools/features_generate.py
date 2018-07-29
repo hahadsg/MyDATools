@@ -34,7 +34,9 @@ def mean_encoding(df, groupby_cols, target_col, gen_feature_name=None, scheme='k
             进行mean_encoding的方法
             kfold: 对训练数据进行KFold(kfold_splits)，然后每次对除当前组进行fit，再对当前组进行transform
         kfold_splits: int, default 5
-            scheme kfold使用
+            scheme=kfold: KFold(n_splits=kfold_splits)
+        kfold_seed: int, default None
+            scheme=kfold: KFold(random_state=kfold_seed)
     """
     if not isinstance(groupby_cols, list):
         groupby_cols = [groupby_cols]
