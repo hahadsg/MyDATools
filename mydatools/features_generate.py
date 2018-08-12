@@ -81,7 +81,7 @@ def mean_encoding(df, groupby_cols, target_col, test_index=None, gen_feature_nam
 
     # fillna with globalmean
     globalmean = df[target_col].mean()
-    df.fillna(globalmean, inplace=True)
+    df[gen_feature_name] = df[gen_feature_name].fillna(globalmean)
 
     if return_feature_name:
         return df, gen_feature_name
